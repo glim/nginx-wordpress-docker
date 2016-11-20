@@ -24,7 +24,7 @@ wordpress:
   links:
     - db:mysql
 nginx:
-  image: raulr/nginx-wordpress
+  image: conorw/nginx-wordpress
   links:
    - wordpress
   volumes_from:
