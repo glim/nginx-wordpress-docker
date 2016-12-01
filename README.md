@@ -19,6 +19,35 @@ The Nginx configuration in this image is based on the guidelines given by the [W
 Example `docker-compose.yml`:
 
 ```yaml
+version: '2'
+
+services:
+    wordpress:
+      image: wordpress:fpm
+      networks:
+        - teamthing-network
+    nginx:
+      image: conorw/nginx-wordpress
+      networks:
+        - teamthing-network
+      volumes_from:
+       - wordpress
+      ports:
+       - "8080:80"
+      environment:
+        POST_MAX_SIZE: 128m
+    db:
+      image: mariadb
+      networks:
+        - teamthing-network
+      environment:
+        MYSQL_ROOT_PASSWORD: example
+
+networks:
+    teamthing-network:
+        driver: bridge
+        
+OR
 wordpress:
   image: wordpress:fpm
   links:
