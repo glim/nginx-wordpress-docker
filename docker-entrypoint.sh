@@ -1,22 +1,5 @@
-#!/bin/bash
+#!/bin/ash
 set -e
-
-common_post_max_size() {
-	if [[ ! "${POST_MAX_SIZE}" =~ ^([0-9]+)([kKmMgG]?)$ ]]; then
-		echo >&2 'error: invalid value "'"${POST_MAX_SIZE}"'" for POST_MAX_SIZE environment variable'
-		exit 1
-	fi
-
-	local VALUE="${BASH_REMATCH[1]}"
-	local UNIT="${BASH_REMATCH[2]}"
-
-	# Nginx does not support Gigabyte unit, convert it to Megabytes
-	if [ "${UNIT}" == "g" ] || [ "${UNIT}" == "G" ]; then
-		VALUE="$(($VALUE * 1024))"
-		UNIT="m"
-	fi
-	POST_MAX_SIZE="${VALUE}${UNIT}"
-}
 
 escape_sed() {
     echo "$1" | sed -e 's/[\/&]/\\&/g'
@@ -27,8 +10,6 @@ if [ "$1" == nginx ]; then
     : "${BEHIND_PROXY:=$([ -z ${VIRTUAL_HOST} ] && echo "false" || echo "true")}"
     : "${REAL_IP_HEADER:=X-Forwarded-For}"
     : "${REAL_IP_FROM:=172.17.0.0/16}"
-
-    common_post_max_size
 
     sed -i 's/client_max_body_size *[0-9]\+[kKmM]\?/client_max_body_size '"${POST_MAX_SIZE}"'/' /etc/nginx/conf.d/default.conf
     sed -i 's/upload_max_filesize *= *[0-9]\+[kKmMgG]\?/upload_max_filesize='"${POST_MAX_SIZE}"'/' /etc/nginx/global/wordpress.conf
