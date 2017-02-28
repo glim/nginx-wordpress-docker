@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM nginx:1.11-alpine
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY wordpress.conf /etc/nginx/global/wordpress.conf
